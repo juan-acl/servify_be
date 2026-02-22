@@ -7,9 +7,10 @@ import { CategoryModule } from './category/category.module';
 import { RequestModule } from './request/request.module';
 import { OfferModule } from './offer/offer.module';
 import { ExecutionModule } from './execution/execution.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, CategoryModule, RequestModule, OfferModule, ExecutionModule],
+  imports: [AuthModule, PrismaModule, CategoryModule, RequestModule, OfferModule, ExecutionModule, ChatModule],
   controllers: [AppController],
   providers: [AppService],
 })
