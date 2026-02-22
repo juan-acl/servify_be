@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { PaginationDto } from 'src/commons/dto';
 
 @Controller('category')
 export class CategoryController {
@@ -23,11 +25,8 @@ export class CategoryController {
   }
 
   @Get()
-  findAll(@Param('page') id: number, @Param('limit') limit: number) {
-    return this.categoryService.findAll({
-      page: id,
-      limit: limit,
-    });
+  findAll(@Query() pagination: PaginationDto) {
+    return this.categoryService.findAll(pagination);
   }
 
   @Get(':id')

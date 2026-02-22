@@ -10,7 +10,6 @@ export class CategoryService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    this.logger.log('Creacion de una categoria', createCategoryDto);
     const existingCategory = await this.prisma.category.findUnique({
       where: { name: createCategoryDto.name, isActive: true },
     });

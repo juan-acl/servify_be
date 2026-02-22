@@ -6,9 +6,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CategoryModule } from './category/category.module';
 import { RequestModule } from './request/request.module';
 import { OfferModule } from './offer/offer.module';
+import { ExecutionModule } from './execution/execution.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, CategoryModule, RequestModule, OfferModule],
+  imports: [AuthModule, PrismaModule, CategoryModule, RequestModule, OfferModule, ExecutionModule],
   controllers: [AppController],
   providers: [AppService],
 })
