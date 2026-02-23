@@ -6,6 +6,7 @@ const environmentsSchema = z.object({
   DATABASE_URL: z.string('La variable DATABASE_URL es necesaria'),
   JWT_SECRET: z.string('La variable JWT_SECRET es necesaria'),
   JWT_EXPIRES_IN: z.string('La variable JWT_EXPIRES_IN es necesaria'),
+  URL: z.string('La variable URL es necesaria'),
 });
 
 let enviroments: undefined | z.infer<typeof environmentsSchema> = undefined;
@@ -24,4 +25,5 @@ export const envs = {
   jwtSecret: enviroments.JWT_SECRET,
   databaseUrl: enviroments.DATABASE_URL,
   jwtExpiresIn: enviroments.JWT_EXPIRES_IN,
+  url: enviroments.URL,
 };

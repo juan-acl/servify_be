@@ -57,7 +57,7 @@ export class NotificationService {
 
     return notifications.map((n) => ({
       ...n,
-      data: n.data ? JSON.parse(n.data as string) : null,
+      data: n.data ? JSON.parse(n.data) : null,
     }));
   }
 
