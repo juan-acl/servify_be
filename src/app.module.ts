@@ -8,9 +8,10 @@ import { RequestModule } from './request/request.module';
 import { OfferModule } from './offer/offer.module';
 import { ExecutionModule } from './execution/execution.module';
 import { ChatModule } from './chat/chat.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, CategoryModule, RequestModule, OfferModule, ExecutionModule, ChatModule],
+  imports: [AuthModule, PrismaModule, CategoryModule, RequestModule, OfferModule, ExecutionModule, ChatModule, ReviewModule],
   controllers: [AppController],
   providers: [AppService],
 })
