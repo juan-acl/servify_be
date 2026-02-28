@@ -171,6 +171,13 @@ export class OfferService {
       const acceptedOffer = await tx.offer.update({
         where: { id: offerId },
         data: { status: OfferStatus.ACCEPTED },
+        include: {
+          request: {
+            include: {
+              client: true,
+            },
+          },
+        },
       });
 
       await tx.offer.updateMany({
@@ -214,6 +221,39 @@ export class OfferService {
         },
       });
 
+      const fullNameClient = `${acceptedOffer.request.client.firstName} ${acceptedOffer.request.client.lastName}`;
+      const fullNameProfessional = `${offer.professional.firstName} ${offer.professional.lastName}`;
+
+      await tx.notification.create({
+        data: {
+          userId: offer.professionalId,
+          title: `${fullNameClient} acaba de aceptar tu oferta.`,
+          body: `Tu oferta para la solicitud "${offer.request.address}" fue aceptada. Precio acordado: Q${offer.price}.`,
+          type: 'OFFER_ACCEPTED',
+          isRead: false,
+          data: JSON.stringify({
+            requestId: offer.requestId,
+            executionId: execution.id,
+            conversationId: conversation.id,
+          }),
+        },
+      });
+
+      await tx.notification.create({
+        data: {
+          userId: clientId,
+          title: `${fullNameProfessional} acaba de ofertar a tu solicitud.`,
+          body: `Tu oferta para la solicitud "${offer.request.address}" fue aceptada. Precio acordado: Q${offer.price}.`,
+          type: 'OFFER_ACCEPTED',
+          isRead: false,
+          data: JSON.stringify({
+            requestId: offer.requestId,
+            executionId: execution.id,
+            conversationId: conversation.id,
+          }),
+        },
+      });
+
       return { acceptedOffer, execution, conversation };
     });
 
@@ -248,7 +288,13 @@ export class OfferService {
   async reject(offerId: string, clientId: string) {
     const offer = await this.prisma.offer.findUnique({
       where: { id: offerId },
-      include: { request: true },
+      include: {
+        request: {
+          include: {
+            client: true,
+          },
+        },
+      },
     });
 
     if (!offer) {
@@ -273,6 +319,21 @@ export class OfferService {
     this.offersGateway.notifyOfferRejected(offer.professionalId, {
       offerId: offer.id,
       requestId: offer.requestId,
+    });
+
+    const fullNameClient = `${offer.request.client.firstName} ${offer.request.client.lastName}`;
+
+    await this.prisma.notification.create({
+      data: {
+        userId: offer.professionalId,
+        title: `${fullNameClient} acaba de rechazar tu oferta.`,
+        body: `Tu oferta para la solicitud "${offer.request.address}" fue rechazada. Precio acordado: Q${offer.price}.`,
+        type: 'OFFER_REJECTED',
+        isRead: false,
+        data: JSON.stringify({
+          requestId: offer.requestId,
+        }),
+      },
     });
 
     this.logger.log(`Oferta rechazada: ${offerId}`);

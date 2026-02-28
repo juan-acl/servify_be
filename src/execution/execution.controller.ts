@@ -25,7 +25,7 @@ export class ExecutionController {
     return this.executionService.nextStatus(id, req.user.id, 'IN_TRANSIT');
   }
 
-  @Get(':id/start')
+  @Patch(':id/arrived')
   markInStart(@Param('id') id: string, @Req() req) {
     return this.executionService.nextStatus(id, req.user.id, 'IN_PROGRESS');
   }

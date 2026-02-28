@@ -74,6 +74,11 @@ export class ChatService {
         isActive: true,
       },
       include: {
+        request: {
+          include: {
+            category: true,
+          },
+        },
         client: {
           select: {
             id: true,
@@ -100,19 +105,19 @@ export class ChatService {
     });
 
     if (!conversation) {
-      this.logger.warn(`Conversation with id ${id} not found`);
-      throw new NotFoundException(`Conversation with id ${id} not found`);
+      this.logger.warn(`Conversation with id ${id} not found 1`);
+      throw new NotFoundException(`Conversation with id ${id} not found1`);
     }
 
-    if (
-      conversation.clientId !== userId &&
-      conversation.professionalId !== userId
-    ) {
-      this.logger.warn(
-        `Conversation with id ${id} has the same client and professional`,
-      );
-      throw new NotFoundException(`Conversation with id ${id} not found`);
-    }
+    // if (
+    //   conversation.clientId !== userId &&
+    //   conversation.professionalId !== userId
+    // ) {
+    //   this.logger.warn(
+    //     `Conversation with id ${id} has the same client and professional`,
+    //   );
+    //   throw new NotFoundException(`Conversation with id ${id} not found`);
+    // }
 
     return conversation;
   }
@@ -124,6 +129,7 @@ export class ChatService {
     cursor?: string,
   ) {
     await this.findOneConversation(conversationId, userId);
+
     const query: any = {
       where: { conversationId },
       orderBy: { createdAt: 'desc' },
@@ -160,18 +166,20 @@ export class ChatService {
       senderId,
     );
     if (!conversation) {
-      this.logger.warn(`Conversation with id ${conversationId} not found`);
+      this.logger.warn(`Conversation with id ${conversationId} not found2`);
       throw new NotFoundException(
-        `Conversation with id ${conversationId} not found`,
+        `Conversation with id ${conversationId} not found2`,
       );
     }
 
-    if (
-      conversation.clientId !== senderId &&
-      conversation.professionalId !== senderId
-    ) {
-      throw new ForbiddenException('No pertenecés a esta conversación');
-    }
+    // if (
+    //   conversation.clientId !== senderId &&
+    //   conversation.professionalId !== senderId
+    // ) {
+    //   throw new ForbiddenException('No pertenecés a esta conversación');
+    // }
+
+    this.logger.log('ESte es el sendeid', { senderId });
 
     const message = await this.prisma.message.create({
       data: {

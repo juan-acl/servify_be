@@ -78,23 +78,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const { message, recipientId } = await this.chatService.sendMessage(
+      const { message } = await this.chatService.sendMessage(
         data.conversationId,
-        data.content,
         data.senderId,
+        data.content,
       );
 
+      // Emitir a toda la sala (ambos lo reciben)
       this.server
         .to(`conversation_${data.conversationId}`)
-        .emit('new_message', {
-          message,
-        });
-
-      // También enviar directamente al destinatario por si no está en la sala
-      const recipientSocketId = this.connectedUsers.get(recipientId);
-      if (recipientSocketId) {
-        this.server.to(recipientSocketId).emit('new_message', message);
-      }
+        .emit('new_message', message);
 
       return {
         event: 'message_sent',
@@ -110,14 +103,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('typing')
-  handleIsTyping(
-    @MessageBody() data: { conversationId: string; senderId: string },
+  handleTyping(
+    @MessageBody()
+    data: { conversationId: string; userId: string; isTyping: boolean },
     @ConnectedSocket() client: Socket,
   ) {
-    this.server.to(`conversation_${data.conversationId}`).emit('typing', {
-      conversationId: data.conversationId,
-      senderId: data.senderId,
-    });
+    // client.to() envía a todos EN la sala EXCEPTO al que emite
+    client
+      .to(`conversation_${data.conversationId}`)
+      .emit('user_typing', { userId: data.userId, isTyping: data.isTyping });
   }
 
   @SubscribeMessage('message_read')

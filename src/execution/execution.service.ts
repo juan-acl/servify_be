@@ -149,14 +149,14 @@ export class ExecutionService {
       throw new NotFoundException(`Execution with id ${idEx} not found`);
     }
 
-    if (execution.professionalId !== profesionalId) {
-      this.logger.error(
-        'El profesional no tiene permiso para actualizar esta ejecución',
-      );
-      throw new ForbiddenException(
-        'El profesional no tiene permiso para actualizar esta ejecución',
-      );
-    }
+    // if (execution.professionalId !== profesionalId) {
+    //   this.logger.error(
+    //     'El profesional no tiene permiso para actualizar esta ejecución',
+    //   );
+    //   throw new ForbiddenException(
+    //     'El profesional no tiene permiso para actualizar esta ejecución',
+    //   );
+    // }
 
     const [executionUpdated] = await this.primsa.$transaction([
       this.primsa.serviceExecution.update({
@@ -184,31 +184,32 @@ export class ExecutionService {
         id: idEx,
       },
       include: {
+        offer: true,
         request: {
           include: {
             category: true,
+            client: true,
+            conversation: true,
           },
         },
         professional: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
-            phone: true,
-          },
-          include: {
             professionalProfile: {
               select: {
                 bio: true,
                 level: true,
               },
             },
-          },
-        },
-        offer: {
-          select: {
-            price: true,
-            comment: true,
-            estimatedArrivalMinutes: true,
+            // offer: {
+            //   select: {
+            //     price: true,
+            //     comment: true,
+            //     estimatedArrivalMinutes: true,
+            //   },
+            // },
           },
         },
       },
@@ -219,14 +220,15 @@ export class ExecutionService {
       throw new NotFoundException(`Execution with id ${idEx} not found`);
     }
 
-    if (currentExecution.professionalId !== profesionalId) {
-      this.logger.error(
-        'El profesional no tiene permiso para ver esta ejecución',
-      );
-      throw new ForbiddenException(
-        'El profesional no tiene permiso para ver esta ejecución',
-      );
-    }
+    // verificarlo pero con el clientId, no con el profesionalId, porque el request tiene el clientId, no el profesionalId
+    // if (currentExecution.request.clientId !== profesionalId) {
+    //   this.logger.error(
+    //     'El profesional no tiene permiso para ver esta ejecución',
+    //   );
+    //   throw new ForbiddenException(
+    //     'El profesional no tiene permiso para ver esta ejecución',
+    //   );
+    // }
 
     return currentExecution;
   }
